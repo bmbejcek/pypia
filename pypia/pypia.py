@@ -80,13 +80,13 @@ class Distro():
         for package in self.required_packages:
             raw = input('Installing {}. OK? (y/n): '.format(package))
             if (raw.lower() == 'y') | (raw.lower() == 'yes'):
-                subprocess.call(['sudo'] + [i for i in self.install_command.format(package).split()])
+                subprocess.call([[i for i in self.install_command.format(package).split()])
             else:
                 sys.exit('\n{} required. Exiting.\n'.format(package))
 
     def restart_network_manager(self):
         print('Restarting network manager...')
-        subprocess.call(['sudo', 'systemctl', 'restart', 'NetworkManager.service'])
+        subprocess.call(['systemctl', 'restart', 'NetworkManager.service'])
 
 
 class PiaConfigurations():
@@ -119,8 +119,8 @@ class PiaConfigurations():
         try:
             print('\nDownloading PIA certificate...')
             if not os.path.exists('/etc/openvpn/'):
-                subprocess.call(['sudo', 'mkdir', '/etc/openvpn'])
-            subprocess.call(['sudo', 'curl', '--url', self.cert_address, '-o', '/etc/openvpn/ca.rsa.2048.crt'])
+                subprocess.call([mkdir', '/etc/openvpn'])
+            subprocess.call(['curl', '--url', self.cert_address, '-o', '/etc/openvpn/ca.rsa.2048.crt'])
             if os.path.exists('/etc/openvpn/ca.rsa.2048.crt'):
                 print('PIA certificate downloaded and saved to /etc/openvpn/')
         except URLError:
@@ -148,12 +148,12 @@ class PiaConfigurations():
         self.configs_dict = {k: v for k, v in configs_dict.items() if isinstance(v, dict) and v.get('dns')}
 
     def delete_old_configs(self):
-        config_list = subprocess.check_output(['sudo', 'ls', self.config_dir]).decode('utf-8').split('\n')
+        config_list = subprocess.check_output(['ls', self.config_dir]).decode('utf-8').split('\n')
         if any([i for i in config_list if i.startswith('PIA - ')]):
             print('Deleting old PIA config files...')
             for f in config_list:
                 if f.startswith('PIA - '):
-                    subprocess.call(['sudo', 'rm', '{}{}'.format(self.config_dir, f)])
+                    subprocess.call(['rm', '{}{}'.format(self.config_dir, f)])
 
 
 class Keyfile():
@@ -190,10 +190,10 @@ class Keyfile():
         with tempfile.NamedTemporaryFile(mode='w') as ntf:
             ntf.write(self.keyfile_string)
             ntf.seek(0)
-            subprocess.call(['sudo', 'cp', ntf.name, '/etc/NetworkManager/system-connections/'])
+            subprocess.call(['cp', ntf.name, '/etc/NetworkManager/system-connections/'])
             file_name = '/etc/NetworkManager/system-connections/' + ntf.name.split('/')[-1]
-        subprocess.call(['sudo', 'mv', file_name, self.config_file])
-        subprocess.call(['sudo', 'chmod', '0600', self.config_file])
+        subprocess.call(['mv', file_name, self.config_file])
+        subprocess.call(['chmod', '0600', self.config_file])
 
     def __str__(self):
         return self.keyfile_string
