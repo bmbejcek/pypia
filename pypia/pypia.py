@@ -80,7 +80,7 @@ class Distro():
         for package in self.required_packages:
             raw = input('Installing {}. OK? (y/n): '.format(package))
             if (raw.lower() == 'y') | (raw.lower() == 'yes'):
-                subprocess.call([[i for i in self.install_command.format(package).split()])
+                subprocess.call([i for i in self.install_command.format(package).split()])
             else:
                 sys.exit('\n{} required. Exiting.\n'.format(package))
 
